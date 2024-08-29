@@ -1,0 +1,79 @@
+function F = force(der,r,H,rw,snr1,snr2,changflag)
+%artificial force calculation
+%   F is the absolute value of potential's derivative in r 
+
+% input:der 为力场求x,y的偏导，=1 x;=2 y
+% input:r 为(x,y)到用户(wx,wy)的向量 (x-wx,y-wx)
+% input:H 为无人机飞行高度
+% input:rw  为(x,y)到窃听者(x2,y2)的向量 （x-x2,y-y2）
+% input:snr1 为遮蔽要求的最大信噪比
+% input:snr2 为设定最大信噪比
+% input:changflag 为具体情况 0遮蔽 1非遮蔽 2部分遮蔽
+% input:boundaryflag 为具体情况 1指第一次进入隐蔽边界 2第二次进入隐蔽边界
+
+% L=5; rho=0.5; error=0.01;
+% snr1=Bisection(L,rho,error);
+% disp(['max sinr= ' num2str(snr1)]);
+% snr2=1e3;
+
+r0=norm(r);
+rw0=norm(rw);
+% disp([' r0: ' num2str(r0) ' rw0: ' num2str(rw0)]);
+if der==1
+    % 求力场的x偏导
+    if changflag==0
+        % 遮蔽情况下
+        F=snr1/log(2)/(r0^2+H^2+(rw0^2+H^2)*snr1)*((rw0^2+H^2)/(r0^2+H^2)*(-r(1))+rw(1));
+    elseif changflag==1
+        % 非遮蔽情况下
+        F=-1*snr2/log(2)/(r0^2+H^2)/(r0^2+H^2+snr2)*(r(1));
+    elseif changflag==2
+        % 部分场位于遮蔽情况下
+%         if boundaryflag<=1
+            % 针对回环现象的flag
+            if snr1*(rw0^2+H^2)>snr2
+                F=-1*snr2/log(2)/(r0^2+H^2)/(r0^2+H^2+snr2)*(r(1));
+            else
+                F=snr1/log(2)/(r0^2+H^2+(rw0^2+H^2)*snr1)*((rw0^2+H^2)/(r0^2+H^2)*(-r(1))+rw(1));
+            end
+%         else
+%             if snr1*(rw0^2+H^2)>=snr2
+%                 F=-1*snr2/log(2)/(r0^2+H^2)/(r0^2+H^2+snr2)*(r(1));
+%             else
+%                 F=snr1/log(2)/(r0^2+H^2+(rw0^2+H^2)*snr1)*((rw0^2+H^2)/(r0^2+H^2)*(-r(1))+rw(1));
+%             end
+%         end
+    end
+elseif der==2
+    % 求力场的y偏导
+    if changflag==0
+        % 遮蔽情况下
+        F=snr1/log(2)/(r0^2+H^2+(rw0^2+H^2)*snr1)*((rw0^2+H^2)/(r0^2+H^2)*(-r(2))+rw(2));
+    elseif changflag==1
+        % 非遮蔽情况下
+        F=-1*snr2/log(2)/(r0^2+H^2)/(r0^2+H^2+snr2)*(r(2));
+    elseif changflag==2
+        % 部分场位于遮蔽情况下
+%         if boundaryflag<=1
+            if abs(rw0-sqrt(snr2/snr1)
+            if snr1*(rw0^2+H^2)>snr2
+                F=-1*snr2/log(2)/(r0^2+H^2)/(r0^2+H^2+snr2)*(r(2));
+            else
+                F=snr1/log(2)/(r0^2+H^2+(rw0^2+H^2)*snr1)*((rw0^2+H^2)/(r0^2+H^2)*(-r(2))+rw(2));
+            end
+%         else
+%              if snr1*(rw0^2+H^2)>=snr2
+%                 F=-1*snr2/log(2)/(r0^2+H^2)/(r0^2+H^2+snr2)*(r(2));
+%             else
+%                 F=snr1/log(2)/(r0^2+H^2+(rw0^2+H^2)*snr1)*((rw0^2+H^2)/(r0^2+H^2)*(-r(2))+rw(2));
+%              end
+%         end
+    end
+end
+
+% disp([' der: ' num2str(der)]);
+% disp([' der: ' num2str(der)   ' F: ' num2str(F)]);
+
+% disp([' (rw0^2+H^2)/(r0^2+H^2): ' num2str((rw0^2+H^2)/(r0^2+H^2))]);
+% disp([' derx: ' num2str(((rw0^2+H^2)/(r0^2+H^2)*(-r(1))+rw(1)))]);
+% disp([' dery: ' num2str(((rw0^2+H^2)/(r0^2+H^2)*(-r(2))+rw(2)))]);

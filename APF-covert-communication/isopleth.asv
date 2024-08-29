@@ -1,0 +1,126 @@
+% close all;
+rho=0.03;
+snr1=Bisection(5,rho,0.01);
+snr2=1000;
+Pmax=0.1;
+beta=1e-4;
+sigma=1e-4;
+
+H=100;
+
+global wx; 
+global wy;
+global x2; 
+global y2;
+
+% 边界点
+x_save=x2;
+y_save=y2;
+disp(snr2/snr1-H^2);
+R_w=(snr2/snr1-H^2)^0.5;
+disp(['convert rho= ' num2str(rho) ' convert Rw=' num2str(R_w)]);
+
+% 极小值点
+minF=100;
+minx=0;miny=0;
+mini=1;
+
+global covflag;
+global lastcovflag;
+xi=1;yi=1;si=1;si0=1;
+
+for x=-10:1:500
+    for y=-10:1:500
+        r=[x,y];
+        r0=norm(r);
+        rw=[x-x2,y-y2];
+        rw0=norm(rw);
+        if   snr1*sigma^2/beta*(rw0^2+H^2)>Pmax%snr1*(rw0^2+H^2)>snr2
+%             F(xi,yi)=1*snr2/log(2)*r0/(r0^2+H^2)/(r0^2+H^2+snr2);
+            R(xi,yi)=-log2(1+Pmax*beta/sigma^2/(r0^2+H^2));
+            lastcovflag=covflag;
+            covflag=2;  
+        else
+            Pw=snr1*(rw0^2+H^2)*sigma^2/beta;
+            R(xi,yi)=-log2(1+Pw*beta/sigma^2/(r0^2+H^2));
+%             R(xi,yi)=-log2(1+snr1*(rw0^2+H^2)/(r0^2+H^2));
+%             F(xi,yi)=snr1/log(2)/(r0^2+H^2+(rw0^2+H^2)*snr1)/(r0^2+H^2)*norm(rw*(r0^2+H^2)-r*(rw0^2+H^2));
+            lastcovflag=covflag;
+            covflag=1;  
+        end
+        % 找极小值点
+%         if x<100 & x>-50 & y<100 & y>-50
+%             if minF==F(xi,yi)
+%                 mini=mini+1;
+%                 minx(mini)=x;miny(mini)=y;
+%             elseif minF>F(xi,yi)
+%                 minF=F(xi,yi);
+%                 minx(mini)=x;miny(mini)=y;
+%             end
+%         end
+
+        yi=yi+1;
+    end
+    yi=1;
+    xi=xi+1;
+end
+
+x=-10:1:500;
+y=-10:1:500;
+
+set(0,'defaultAxesFontName', 'TimesSimSun'); %坐标轴
+set(0,'defaultTextFontName', 'TimesSimSun'); %文字
+%% 2D
+plot(wx, wy,"k"+"^",'MarkerFaceColor','k','markersize',7);hold on;
+plot(x2, y2,'or','markersize',12,'LineWidth',2);
+% 绘制等值线
+[Y,X]=meshgrid(y,x);
+h = contour(X, Y, R, 200, 'LineWidth',1.2);hold on;
+xlabel('x[m]');
+ylabel('y[m]');
+% title(['(a)  Potential field diagram with \rho=' num2str(rho) '.']);
+
+
+% 绘制covert boundary
+hhx=linspace(-R_w+x2,R_w+x2,10000); 
+hhy=-(R_w^2-(hhx-x2).^2).^0.5+y2;
+hhy2=(R_w^2-(hhx-x2).^2).^0.5+y2;
+plot(hhx,hhy,'r--','LineWidth',2);hold on;
+plot(hhx,hhy2,'r--','LineWidth',2);hold on;
+
+% legend('{Bob}','{Willie}','','Covert boundary');
+% legend('{Bob}','{Willie}');
+
+%% 3D
+% [Y,X]=meshgrid(y,x);
+% surfc(X,Y,R);
+% grid on
+
+
+
+
+
+% 找极小值点
+% plot(minx,miny,'rp','LineWidth',0.5);
+
+% 绘制场之间边界点
+% if length(x_save)>1
+%     plot(x_save,y_save,'x');hold on;
+% end
+
+% data=xlsread('data.xlsx');
+
+% 遮蔽
+% x=data(1,1:length(x_opt));
+% y=data(2,1:length(y_opt)); 
+% plot(x,y,'r');hold on;
+
+% 部分遮蔽
+% x=data(6,1:length(x_opt));
+% y=data(7,1:length(y_opt)); 
+% plot(x,y,'r');hold on;
+% x=data(8,:); 
+% y=data(9,:); 
+% plot(x,y,'p');hold on;
+% 
+% disp(['length of x_opt=' num2str(length(x_opt))])

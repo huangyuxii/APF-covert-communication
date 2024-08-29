@@ -1,0 +1,26 @@
+function hover=findhover(snr1,snr2,H)
+
+% initial
+global wx; global wy;
+global x2; global y2;
+
+syms sx sy 
+hover=[0 0 0]; % [flag x y]
+r=[sx-wx sy-wy];r0=norm(r);
+rw=[sx-x2 sy-y2];rw0=norm(rw);
+Rw=(snr2/snr1-H^2)^0.5;
+                                                                                                                                                                                                                                                                                                                                                                                                     
+% solve
+[sx,sy]=solve((r0^2+H^2)*rw(1)==(rw0^2+H^2)*r(1),(r0^2+H^2)*rw(2)==(rw0^2+H^2)*r(2) );
+
+rw=[sx-x2 sy-y2];rw0=norm(rw);
+if Rw>rw0
+   hover=[1 sx sy];
+elseif Rw<=rw0 & Rw>=norm([wx-x2 wy-y2])   
+   hover=[0 0 0];
+elseif Rw<norm([wx-x2 wy-y2])   
+    hover=[1 0 0];
+end
+% disp(hover);
+% pause;
+end

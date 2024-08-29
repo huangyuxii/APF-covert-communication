@@ -1,0 +1,89 @@
+% close all;
+
+rho=0.05;
+snr1=Bisection(5,rho,0.01);
+snr2=1000;
+Pmax=0.1;
+beta=1e-4;
+sigma=1e-4;
+
+H=100;
+
+% Bob 
+wx=0;
+wy=0;
+wz=0;
+
+% Willie
+x2=40;
+y2=40;
+z2=0;
+
+plot3(wx, wy,wz,"k"+"^",'MarkerFaceColor','k','markersize',7);hold on;
+plot3(x2, y2,z2,'or','markersize',12,'LineWidth',2);hold on;
+
+% boundary 
+dw=(snr2/snr1)^0.5;
+% disp(['convert rho= ' num2str(rho) ' convert Rw=' num2str(Rw)]);
+%  
+% [theta, phi] = meshgrid(linspace(0, 2*pi, 50), linspace(0, pi, 50));
+% x = Rw * sin(phi) .* cos(theta) + x2;
+% y = Rw * sin(phi) .* sin(theta) + y2;
+% z = Rw * cos(phi) + z2;
+% 
+% % 绘制球面
+% surf(x, y, z); hold on;
+% axis equal;
+% xlabel('X');
+% ylabel('Y');
+% zlabel('Z');
+
+
+
+xi=1;yi=1;zi=1;
+si=1;si0=1;
+
+for x=-50:10:100
+    for y=-50:10:100
+        for z=0:10:50
+            r=[x,y,z];
+            r0=norm(r);
+            rw=[x-x2,y-y2,z-z2];
+            rw0=norm(rw);
+            if   snr1*sigma^2/beta*(rw0^2+H^2)>Pmax
+                FX(xi,yi,zi)=-2/log(2)/(1+snr2/r0^2)*snr2/r0^3*r(1); 
+                FY(xi,yi,zi)=-2/log(2)/(1+snr2/r0^2)*snr2/r0^3*r(2);
+                FZ(xi,yi,zi)=-2/log(2)/(1+snr2/r0^2)*snr2/r0^3*r(3);
+            else
+                FX(xi,yi,zi)=-2/log(2)/(1+snr1/r0^2)*snr1/r0^3*r(1)+ 1/log(2)/(1+snr1/r0^2)*snr1/r0^2*2*rw0*rw;
+            end
+            zi=zi+1;
+        end
+        zi=1;
+        yi=yi+1;
+    end
+    zi=1;
+    yi=1;
+    xi=xi+1;
+end
+
+x=-50:10:100;
+y=-50:10:100;
+z=0:10:50;
+
+%% 3D
+[Y,X]=meshgrid(y,x);
+% 绘制向量图
+
+quiver(X,Y,Z,FX,FY,FZ);hold on;
+xlabel('x[m]');
+ylabel('y[m]');
+
+% title(['(a)  Potential field diagram with \rho=' num2str(rho) '.']);
+
+
+
+
+
+
+
