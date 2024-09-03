@@ -14,4 +14,4 @@ isopleth: plot APF figure under different covertness requirements
 
 xxplot.m: the figureplot for paper in the first revision. 
 
-fig/figure (folder): The second revision figures are included.
+figure (folder): The second revision figures are included.
