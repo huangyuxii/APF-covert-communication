@@ -12,4 +12,6 @@ force: calculate twisted force in covert communication
 
 isopleth: plot APF figure under different covertness requirements
 
-xxplot.m: the figureplot for paper in the first revision. The second revision figures are not include.
+xxplot.m: the figureplot for paper in the first revision. 
+
+fig/figure (folder): The second revision figures are included.
